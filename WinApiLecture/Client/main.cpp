@@ -84,11 +84,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,         // 실행 된 프로세�
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
+    // 단축키 테이블 정보 로딩
+    // 리소스 뷰 -> Client/Client.rc/Accelerator/IDC_CLIENT
+    // 해당 경로를 찾아들어가면 설정되어있는 단축키 조합을 볼 수 있다.
+    // ex) 'alt + ?' -> IDM_ABOUT 메세지 발생 -> 이벤트 호출 == 도움말 -> 정보 
+    // 특정 윈도우 동작을 사용할게 아니라면 필요없는 부분
+    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));  // 크게 신경쓰지 않아도 되는 부분
 
     MSG msg;
 
-    // 기본 메시지 루프입니다:
+    // 기본 메시지 루프
+    // 무한 반복무을 돈다.
+    // GetMessage : 
+    //      메세지큐에서 메세지 확인할때까지 대기
+    //      GetMessage가 false를 반환하면 프로그램이 종료된다.
+    //      msg.message == WM_QUIT 이면 false를 반환한다.
+    //      즉, WM_QUIT 메세지가 발생하면 프로그램이 종료됨을 의미한다.
+
+    // 프로그램이 메세지 반응형 형태로 구성되어있다.
+    // 윈도우 메세지가 존재하지 않으면 코드가 돌지 않는다.
+    // 현재 구조는 게임 클라이언트로 사용하기엔 적절하지 않다.
+    // 강의 형태 : 기본구조로 게임을 구현해보고 차후 적절한 형태로 변형해본다.
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         // 해당 윈도우가 종료된다고 판단된다면 while 반복문이 종료되면서 main함수가 종료되는 구조
@@ -96,11 +112,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,         // 실행 된 프로세�
         // 이 때문에 윈도우와 프로세스가 운명을 같이한다는 느낌을 받을 수 있으나.
         // 실제론 그러하지 않다. 윈도우는 인터페이스중 하나일 뿐이고
         // 창을 가지지 않는 프로세스들도 존재하기에 "프로세스가 곧 윈도우다."라고 생각하면 안된다.(프로세스 != 윈도우)
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
+        
+        // 특정 윈도우 동작을 사용할게 아니라면 필요없는 부분
+        //if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        //{
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-        }
+        //}
     }
 
     return (int) msg.wParam;
@@ -210,7 +228,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+            Rectangle(hdc, 10, 10, 110, 110);    // hdc, left, top, right, bottom
+            /*
+                [윈도우 좌표]
+                - '작업영역'이 존재한다.
+                - 작업영역은 '타이틀바'와 '메뉴바' 아래부터 시작한다.
+                - 작업영역에서 0,0은 좌상단을 의미한다.
+                - 위에서 아래로 갈수록 y값은 증가한다.
+                - 좌측에서 우측으로 갈수록 x값은 증가한다.
+
+                - 윈도우 좌표에서 단위 : '픽셀'
+                - 픽셀은 해상도(Resolution)와 관련이 있다.
+                - 1920x1080(=FHD), 
+                - 3840x2160(UHD(=4k))의 경우 FHD 4배의 해상도를 가지고 있다.
+
+            */
             EndPaint(hWnd, &ps);
         }
         break;
