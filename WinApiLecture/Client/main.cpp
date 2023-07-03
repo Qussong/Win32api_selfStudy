@@ -204,6 +204,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+    // hWnd를 통해서 메세지가 발생한 윈도우의 '윈도우핸들'값도 같이 받아진다.
 {
     switch (message)
     {
@@ -225,9 +226,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_PAINT:
-        {
+        {   
+            // case문 안에 지역변수(ps)가 존재하기에 중괄호로 블록영역을 생성하여
+            // 그 안에 지역변수를 넣어줬다.
             PAINTSTRUCT ps;
+            // BeginPaint : Device Context(DC)를 만들어서 ID값을 반환하는 함수
             HDC hdc = BeginPaint(hWnd, &ps);
+            // 의미 : 
+            // DC의 목적지는 hWnd
+            // DC의 펜은 기본펜(black)
+            // CD의 브러쉬는 기본브러쉬(white)
 
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
             Rectangle(hdc, 10, 10, 110, 110);    // hdc, left, top, right, bottom
