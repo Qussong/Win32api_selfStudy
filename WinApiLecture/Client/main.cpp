@@ -35,29 +35,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,         // 실행 된 프로세�
                         - wchar_t 의 포인터 타입 (whcar_t*)
                         - 2Byte 문자열의 주소값
                     */
-                     _In_ int       nCmdShow)           // 
- /*
-     [_In_, _In_opt]
-     'SAL(소스코드주석언어)'라고 한다. ('msdn'사이트를 참고하자)
-     source-code annotation language 
-     변수의 용도,의미를 적어준것 떄문에 코드로서 의미가 없다.
-     매번 모든 변수에 주석을 달아주기 힘들다
-     어느정도 함축된 의미로 키워드를 달아줌으로써 주석을대체한다.
-     _In_ : 데이터가 이 함수에 입력됨을 의미한다.
-     _In_opt_ : '부가적인 데이터', '잉여 데이터' 임을 나타낸다.
- */
-/*  
-    'hPrevInstance'의 존재 이유 : 
-    아마도 Windows가 오래된 프로그램이다보니 
-    main함수의 구조를 바꿀 수 없지 않았을까? 라는 의견...
-*/
+                     _In_ int       nCmdShow)  
 {
-    // [UNREFERENCED_PARAMETER]
-    // 별다른 의미가 없음을 의미한다.
-    // 컴파일러도 바보가 아니기에 아래 두줄은 무시해버린다.
-    // 최종적으로 컴파일된 코드를 보면 아래 두줄은 존재하지 않게된다.
-    // 왜 존재하는가? : hPrevInstance 와 lpCmdLine가 참조되지 않는 변수임을 알려줄 뿐
-    // 주석으로 적었어도 됐을 코드이다. 그냥 무시해도 된다.
     UNREFERENCED_PARAMETER(hPrevInstance);  // UNREFERENCED_PARAMETER(hPrevInstance) == hPrevInstance
     UNREFERENCED_PARAMETER(lpCmdLine);      // UNREFERENCED_PARAMETER(lpCmdLine) == lpCmdLine
 
@@ -68,69 +47,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,         // 실행 된 프로세�
                                                                             // 해당 값은 실행시 나오는 창의 타이틀로 사용된다.
                                                                             // CreateWindowW()함수에서 직접 타이틀을 입력해줘도 되기에 안해줘도 되는 작업이다.
     LoadStringW(hInstance, IDC_CLIENT/*109*/, szWindowClass, MAX_LOADSTRING);   // 키 값으로 사용한다.
-    /* 
-        [LoadStringW()]
-        - Windows에서 제공해주는 함수
-        - 프로젝트 리소스 테이블인 String Table에서 103, 109에 해당하는 문자열을 가져와서 배열에 넣어주는 함수
-    */
-    MyRegisterClass(hInstance); // 아래 정의부가 있다.
-                                // 윈도우(창)의 정보를 등록한다. (윈도우가 어떤 정보를 띄울것인지 정보를 setting 한다.
 
-    // 애플리케이션 초기화를 수행합니다.
-    // 윈도우(창)를 생성한다.
-    // MyRegisterClass() 함수에서 setting된 정보를 바탕으로 창을 생성한다.
+    MyRegisterClass(hInstance); 
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
     }
-
-    // 단축키 테이블 정보 로딩
-    // 리소스 뷰 -> Client/Client.rc/Accelerator/IDC_CLIENT
-    // 해당 경로를 찾아들어가면 설정되어있는 단축키 조합을 볼 수 있다.
-    // ex) 'alt + ?' -> IDM_ABOUT 메세지 발생 -> 이벤트 호출 == 도움말 -> 정보 
-    // 특정 윈도우 동작을 사용할게 아니라면 필요없는 부분
-    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));  // 크게 신경쓰지 않아도 되는 부분
-
     MSG msg;
 
-    // 기본 메시지 루프
-    // 무한 반복무을 돈다.
-    // GetMessage : 
-    //      메세지큐에서 메세지 확인할때까지 대기
-    //      GetMessage가 false를 반환하면 프로그램이 종료된다.
-    //      msg.message == WM_QUIT 이면 false를 반환한다.
-    //      즉, WM_QUIT 메세지가 발생하면 프로그램이 종료됨을 의미한다.
-
-    // 프로그램이 메세지 반응형 형태로 구성되어있다.
-    // 윈도우 메세지가 존재하지 않으면 코드가 돌지 않는다.
-    // 현재 구조는 게임 클라이언트로 사용하기엔 적절하지 않다.
-    // 강의 형태 : 기본구조로 게임을 구현해보고 차후 적절한 형태로 변형해본다.
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        // 해당 윈도우가 종료된다고 판단된다면 while 반복문이 종료되면서 main함수가 종료되는 구조
-        // 즉, 윈도우(창)가 종료되면 프로그램도 종료되는 구조다.
-        // 이 때문에 윈도우와 프로세스가 운명을 같이한다는 느낌을 받을 수 있으나.
-        // 실제론 그러하지 않다. 윈도우는 인터페이스중 하나일 뿐이고
-        // 창을 가지지 않는 프로세스들도 존재하기에 "프로세스가 곧 윈도우다."라고 생각하면 안된다.(프로세스 != 윈도우)
-        
-        // 특정 윈도우 동작을 사용할게 아니라면 필요없는 부분
-        //if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        //{
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        //}
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
 
     return (int) msg.wParam;
 }
 
-
-
-//
-//  함수: MyRegisterClass()
-//
-//  용도: 창 클래스를 등록합니다.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)   // WNDCLASSEXW 구조체의 멤버들에 값을 채우고 있다.
 {
     WNDCLASSEXW wcex;
@@ -158,16 +91,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)   // WNDCLASSEXW 구조체의 멤버�
     return RegisterClassExW(&wcex); // RegisterClassExW() 함수는 Windows에서 제공하는 함수
 }
 
-//
-//   함수: InitInstance(HINSTANCE, int)
-//
-//   용도: 인스턴스 핸들을 저장하고 주 창을 만듭니다.
-//
-//   주석:
-//
-//        이 함수를 통해 인스턴스 핸들을 전역 변수에 저장하고
-//        주 프로그램 창을 만든 다음 표시합니다.
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
@@ -190,21 +113,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
+   GetDC(hWnd);
    return TRUE;
 }
 
-//
-//  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  용도: 주 창의 메시지를 처리합니다.
-//
-//  WM_COMMAND  - 애플리케이션 메뉴를 처리합니다.
-//  WM_PAINT    - 주 창을 그립니다.
-//  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
-//
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-    // hWnd를 통해서 메세지가 발생한 윈도우의 '윈도우핸들'값도 같이 받아진다.
 {
     switch (message)
     {
@@ -227,32 +140,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {   
-            // case문 안에 지역변수(ps)가 존재하기에 중괄호로 블록영역을 생성하여
-            // 그 안에 지역변수를 넣어줬다.
             PAINTSTRUCT ps;
-            // BeginPaint : Device Context(DC)를 만들어서 ID값을 반환하는 함수
             HDC hdc = BeginPaint(hWnd, &ps);
-            // 의미 : 
-            // DC의 목적지는 hWnd
-            // DC의 펜은 기본펜(black)
-            // CD의 브러쉬는 기본브러쉬(white)
 
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-            Rectangle(hdc, 10, 10, 110, 110);    // hdc, left, top, right, bottom
-            /*
-                [윈도우 좌표]
-                - '작업영역'이 존재한다.
-                - 작업영역은 '타이틀바'와 '메뉴바' 아래부터 시작한다.
-                - 작업영역에서 0,0은 좌상단을 의미한다.
-                - 위에서 아래로 갈수록 y값은 증가한다.
-                - 좌측에서 우측으로 갈수록 x값은 증가한다.
+            HGDIOBJ origin = NULL;
+            origin = SelectObject(hdc, GetStockObject(DC_PEN));	// 기본값 저장
+            SetDCPenColor(hdc, RGB(255, 0, 255));                 // Blue Pen
+            Rectangle(hdc, 10, 10, 110, 110);                   // hdc, left, top, right, bottom
+            SelectObject(hdc, origin);							// 기본값 되돌리기
+            Rectangle(hdc, 10, 110, 110, 210);                  // hdc, left, top, right, bottom
 
-                - 윈도우 좌표에서 단위 : '픽셀'
-                - 픽셀은 해상도(Resolution)와 관련이 있다.
-                - 1920x1080(=FHD), 
-                - 3840x2160(UHD(=4k))의 경우 FHD 4배의 해상도를 가지고 있다.
-
-            */
             EndPaint(hWnd, &ps);
         }
         break;
@@ -265,7 +162,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// 정보 대화 상자의 메시지 처리기입니다.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);

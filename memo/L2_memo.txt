@@ -1,0 +1,28 @@
+
+[ LoadAccelerators() ]
+- HACCEL hAccelTable = 
+	LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT)); 
+	-> 단축키 관련 정보를 체크하는 부분
+
+- "if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))" 해당 문구도 기본 단축키 정보를 사용할게 아니라면 필요없다.
+
+---
+
+[ GetMessage() ]
+- 메세지 큐에 쌓여 있는 메세지들을 꺼내보는 함수
+
+---
+
+[ MSG ]
+- 메세지 구조체
+typedef struct tagMSG {
+		HWND        hwnd;
+		UINT        message;
+		WPARAM      wParam;
+		LPARAM      lParam;
+		DWORD       time;
+		POINT       pt;
+	#ifdef _MAC
+		DWORD       lPrivate;
+	#endif
+	} MSG, *PMSG, NEAR *NPMSG, FAR *LPMSG;
